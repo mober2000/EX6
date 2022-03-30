@@ -38,10 +38,11 @@ public class EX6 {
     @After
     public void tearDown() {
         driver.quit();
+
     }
 
     @Test
-    public void assertElementPresent() {
+    public void assertElementPresents() {
         waitForElementAndClick(
                 By.xpath("//*[contains(@text,'Search Wikipedia')]"),
                 "Cannot find Search Wikipedia input",
@@ -61,18 +62,24 @@ public class EX6 {
                 5
         );
 
-        WebElement title_element = waitForElementPresent(
-                By.id("org.wikipedia:id/view_page_title_text"),
-                "Cannot find article title"
+        String search_result_locator = "//*[@resource-id='org.wikipedia:id/view_page_title_text']";
+        waitForElementPresent(
+                By.xpath(search_result_locator),
+                "Not find result > 0",
+                5
+
         );
 
-        String article_title = title_element.getAttribute("text");
-
-        Assert.assertEquals(
-                "We see unexpected title",
-                "Russia",
-                article_title
+        int amount_of_search_results = assertElementPresent(
+                By.xpath(search_result_locator)
         );
+
+        Assert.assertTrue(
+                "We found to few results",
+                amount_of_search_results >= 1
+        );
+
+
     }
 
     private WebElement waitForElementPresent(By by, String error_message, long timeoutInSeconds)
@@ -102,5 +109,10 @@ public class EX6 {
         element.sendKeys(value);
         return element;
     }
-    
+
+    private int assertElementPresent(By by)
+    {
+        List elements = driver.findElements(by);
+        return elements.size();
+    }
 }
